@@ -1,0 +1,27 @@
+{
+  "name": "jsta",
+  "version": "1.0.0",
+  "description": "just another js ta",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js",
+    "build": "tsc",
+    "test": "jest --config=jest.json",
+    "test:watch": "jest --watch --config=jest.json",
+    "test:coverage": "jest --config=jest.json --coverage --coverageDirectory=coverage"
+  },
+  "dependencies": {
+    "immutable": "^3.8.2",
+    "moment": "^2.21.0",
+    "rxjs": "^5.5.8",
+    "typescript": "^2.8.1",
+    "yahoo-finance": "^0.3.5"
+  },
+  "devDependencies": {
+    "@types/jest": "^20.0.8",
+    "@types/node": "^7.0.41",
+    "jest": "^20.0.4",
+    "ts-jest": "^20.0.14",
+    "ts-node": "^3.3.0"
+  }
+}
