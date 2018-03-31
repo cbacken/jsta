@@ -1,0 +1,10 @@
+{
+    "tickers": [
+        "FB",
+        "AAPL",
+        "AMZN",
+        "NFLX",
+        "GOOG"
+    ],
+    "download": "./history"
+}

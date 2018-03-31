@@ -1,23 +1,32 @@
 import * as yf from 'yahoo-finance';
 import * as path from 'path';
 import * as moment from 'moment';
-import {fromJS, List} from 'immutable';
+import { fromJS, List, Map } from 'immutable';
+import { Observable } from 'rxjs';
 
-const START_DATE = moment('1995-01-01');
+const START_DATE = moment('1995-01-01').format('YYYY-MM-DD');
+const TODAY = moment().format('YYYY-MM-DD');
 
-const yahoo = (symbol: string) => (from: string) => (to: string) => (period: string) => new Promise((resolve, reject) => {
-    yf.historical({symbol, from, to, period}, (err, res) => {
-        if (err) {
-            return reject(err);
-        }
-        return resolve(res);
-    })
-});
+const yahooObservable = (symbol: string, from: string = START_DATE, to: string = TODAY, period: string = 'd') => {
+    const yahooFinance: any = Observable.bindNodeCallback(yf.historical);
+    return yahooFinance({ symbol, from, to, period });
+}
 
-
-export async function download(symbol: string): Promise<List<any>> {
-    const results = await yahoo(symbol)(START_DATE.format('YYYY-MM-DD'))(moment().format('YYYY-MM-DD'))('d');
-    return List(fromJS(results)).sort((a: any, b: any) => {
-        return moment(a.get('date')).isBefore(moment(b.get('date'))) ? -1 : 1;
-    }).toList();
+export function download(symbol: string) {
+    return Observable.create((observer) => {
+        yahooObservable(symbol).subscribe(results => {
+            try {
+                console.log(`Downloading ${symbol}`);
+                observer.next(Map({
+                    symbol,
+                    quotes: List(fromJS(results)).sort((a: any, b: any) => {
+                        return moment(a.get('date')).isBefore(moment(b.get('date'))) ? -1 : 1;
+                    })
+                }));
+                observer.complete();
+            } catch (err) {
+                observer.error(err);
+            }
+        });
+    });
 }
